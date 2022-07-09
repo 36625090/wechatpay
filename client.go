@@ -21,7 +21,7 @@ type Client struct {
 	publicKey                  *rsa.PublicKey
 }
 
-func NewWechatClient(cfg *WechatClientConfig) (*Client, error) {
+func NewWechatClient(cfg *Config) (*Client, error) {
 
 	// 使用 utils 提供的函数从本地文件中加载商户私钥，商户私钥会用来生成请求的签名
 	mchPrivateKey, err := utils.LoadPrivateKey(cfg.PrivateKey)
