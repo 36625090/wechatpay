@@ -13,8 +13,9 @@ type WechatPayClient interface {
 	APPService() APPService
 	NotifyService() (NotifyService, error)
 	H5service() H5service
-	NativeService()NativeService
-	JSAPIService()JSAPIService
+	NativeService() NativeService
+	JSAPIService() JSAPIService
+	RefundService() RefundService
 }
 
 type Client struct {

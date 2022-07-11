@@ -14,20 +14,19 @@ type JSAPIService interface {
 	CloseOrder(outTradeNo string) error
 }
 type jsAPIService struct {
-	appID string
-	mchID string
+	appID     string
+	mchID     string
 	notifyURL string
 	*jsapi.JsapiApiService
 }
 
-func (m *Client) JSAPIService()JSAPIService {
+func (m *Client) JSAPIService() JSAPIService {
 	return &jsAPIService{
-		appID: m.appId,
-		mchID: m.mchID,
+		appID:     m.appId,
+		mchID:     m.mchID,
 		notifyURL: m.paymentNotifyURL,
 		JsapiApiService: &jsapi.JsapiApiService{
 			Client: m.Client,
-
 		},
 	}
 }
@@ -56,18 +55,18 @@ func (m *jsAPIService) QueryOrderById(transactionId string) (*payments.Transacti
 func (m *jsAPIService) QueryOrderByOutTradeNo(outTradeNo string) (*payments.Transaction, error) {
 	req := jsapi.QueryOrderByOutTradeNoRequest{
 		OutTradeNo: core.String(outTradeNo),
-		Mchid:         core.String(m.mchID),
+		Mchid:      core.String(m.mchID),
 	}
+
 	trans, _, err := m.JsapiApiService.QueryOrderByOutTradeNo(context.Background(), req)
 	return trans, err
 }
 
-func (m *jsAPIService) CloseOrder(outTradeNo string) error{
+func (m *jsAPIService) CloseOrder(outTradeNo string) error {
 	req := jsapi.CloseOrderRequest{
 		OutTradeNo: core.String(outTradeNo),
-		Mchid:         core.String(m.mchID),
+		Mchid:      core.String(m.mchID),
 	}
 	_, err := m.JsapiApiService.CloseOrder(context.Background(), req)
 	return err
 }
-
