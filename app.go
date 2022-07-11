@@ -7,15 +7,22 @@ import (
 	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/app"
 )
 
-type APPService struct {
+type APPService interface {
+	PrepayPayment(request app.PrepayRequest) (*app.PrepayWithRequestPaymentResponse, error)
+	QueryOrderById(transactionId string) (*payments.Transaction, error)
+	QueryOrderByOutTradeNo(outTradeNo string) (*payments.Transaction, error)
+	CloseOrder(outTradeNo string) error
+}
+
+type appService struct {
 	appID     string
 	mchID     string
 	notifyURL string
 	*app.AppApiService
 }
 
-func (m *Client) APPService() *APPService {
-	return &APPService{
+func (m *Client) APPService() APPService {
+	return &appService{
 		appID:         m.appId,
 		mchID:         m.mchID,
 		notifyURL:     m.paymentNotifyURL,
@@ -23,7 +30,7 @@ func (m *Client) APPService() *APPService {
 	}
 }
 
-func (m *APPService) PrepayPayment(request app.PrepayRequest) (*app.PrepayWithRequestPaymentResponse, error) {
+func (m *appService) PrepayPayment(request app.PrepayRequest) (*app.PrepayWithRequestPaymentResponse, error) {
 	request.Appid = core.String(m.appID)
 	request.Mchid = core.String(m.mchID)
 	request.NotifyUrl = core.String(m.notifyURL)
@@ -35,7 +42,7 @@ func (m *APPService) PrepayPayment(request app.PrepayRequest) (*app.PrepayWithRe
 	return resp, nil
 }
 
-func (m *APPService) QueryOrderById(transactionId string) (*payments.Transaction, error) {
+func (m *appService) QueryOrderById(transactionId string) (*payments.Transaction, error) {
 	req := app.QueryOrderByIdRequest{
 		TransactionId: core.String(transactionId),
 		Mchid:         core.String(m.mchID),
@@ -44,7 +51,7 @@ func (m *APPService) QueryOrderById(transactionId string) (*payments.Transaction
 	return trans, err
 }
 
-func (m *APPService) QueryOrderByOutTradeNo(outTradeNo string) (*payments.Transaction, error) {
+func (m *appService) QueryOrderByOutTradeNo(outTradeNo string) (*payments.Transaction, error) {
 	req := app.QueryOrderByOutTradeNoRequest{
 		OutTradeNo: core.String(outTradeNo),
 		Mchid:      core.String(m.mchID),
@@ -53,7 +60,7 @@ func (m *APPService) QueryOrderByOutTradeNo(outTradeNo string) (*payments.Transa
 	return trans, err
 }
 
-func (m *APPService) CloseOrder(outTradeNo string) error {
+func (m *appService) CloseOrder(outTradeNo string) error {
 	req := app.CloseOrderRequest{
 		OutTradeNo: core.String(outTradeNo),
 		Mchid:      core.String(m.mchID),

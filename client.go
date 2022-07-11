@@ -9,6 +9,11 @@ import (
 	"github.com/wechatpay-apiv3/wechatpay-go/utils"
 )
 
+type WechatPayClient interface {
+	APPService() APPService
+	NotifyService() (NotifyService, error)
+}
+
 type Client struct {
 	*core.Client
 	appId                      string
@@ -21,7 +26,7 @@ type Client struct {
 	publicKey                  *rsa.PublicKey
 }
 
-func NewWechatClient(cfg *Config) (*Client, error) {
+func NewWechatClient(cfg *Config) (WechatPayClient, error) {
 
 	// 使用 utils 提供的函数从本地文件中加载商户私钥，商户私钥会用来生成请求的签名
 	mchPrivateKey, err := utils.LoadPrivateKey(cfg.PrivateKey)
