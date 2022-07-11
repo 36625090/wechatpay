@@ -7,7 +7,13 @@ import (
 	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/native"
 )
 
-type NativeService struct {
+type NativeService interface {
+	PrepayPayment(request native.PrepayRequest) (*native.PrepayResponse, error)
+	QueryOrderById(transactionId string) (*payments.Transaction, error)
+	QueryOrderByOutTradeNo(outTradeNo string) (*payments.Transaction, error)
+	CloseOrder(outTradeNo string) error
+}
+type nativeService struct {
 	appID string
 	mchID string
 	notifyURL string
@@ -15,8 +21,8 @@ type NativeService struct {
 }
 
 
-func (m *Client) NativeService()*NativeService  {
-	return &NativeService{
+func (m *Client) NativeService()NativeService {
+	return &nativeService{
 		appID: m.appId,
 		mchID: m.mchID,
 		notifyURL: m.paymentNotifyURL,
@@ -26,7 +32,7 @@ func (m *Client) NativeService()*NativeService  {
 	}
 }
 
-func (m *NativeService) PrepayPayment(request native.PrepayRequest) (*native.PrepayResponse, error) {
+func (m *nativeService) PrepayPayment(request native.PrepayRequest) (*native.PrepayResponse, error) {
 	request.Appid = core.String(m.appID)
 	request.Mchid = core.String(m.mchID)
 	request.NotifyUrl = core.String(m.notifyURL)
@@ -37,7 +43,7 @@ func (m *NativeService) PrepayPayment(request native.PrepayRequest) (*native.Pre
 	}
 	return resp, nil
 }
-func (m *NativeService) QueryOrderById(transactionId string) (*payments.Transaction, error) {
+func (m *nativeService) QueryOrderById(transactionId string) (*payments.Transaction, error) {
 	req := native.QueryOrderByIdRequest{
 		TransactionId: core.String(transactionId),
 		Mchid:         core.String(m.mchID),
@@ -46,7 +52,7 @@ func (m *NativeService) QueryOrderById(transactionId string) (*payments.Transact
 	return trans, err
 }
 
-func (m *NativeService) QueryOrderByOutTradeNo(outTradeNo string) (*payments.Transaction, error) {
+func (m *nativeService) QueryOrderByOutTradeNo(outTradeNo string) (*payments.Transaction, error) {
 	req := native.QueryOrderByOutTradeNoRequest{
 		OutTradeNo: core.String(outTradeNo),
 		Mchid:         core.String(m.mchID),
@@ -55,7 +61,7 @@ func (m *NativeService) QueryOrderByOutTradeNo(outTradeNo string) (*payments.Tra
 	return trans, err
 }
 
-func (m *NativeService) CloseOrder(outTradeNo string) error{
+func (m *nativeService) CloseOrder(outTradeNo string) error{
 	req := native.CloseOrderRequest{
 		OutTradeNo: core.String(outTradeNo),
 		Mchid:         core.String(m.mchID),

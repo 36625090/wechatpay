@@ -7,15 +7,21 @@ import (
 	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/jsapi"
 )
 
-type JSAPIService struct {
+type JSAPIService interface {
+	PrepayPayment(request jsapi.PrepayRequest) (*jsapi.PrepayWithRequestPaymentResponse, error)
+	QueryOrderById(transactionId string) (*payments.Transaction, error)
+	QueryOrderByOutTradeNo(outTradeNo string) (*payments.Transaction, error)
+	CloseOrder(outTradeNo string) error
+}
+type jsAPIService struct {
 	appID string
 	mchID string
 	notifyURL string
 	*jsapi.JsapiApiService
 }
 
-func (m *Client) JSAPIService()*JSAPIService  {
-	return &JSAPIService{
+func (m *Client) JSAPIService()JSAPIService {
+	return &jsAPIService{
 		appID: m.appId,
 		mchID: m.mchID,
 		notifyURL: m.paymentNotifyURL,
@@ -26,7 +32,7 @@ func (m *Client) JSAPIService()*JSAPIService  {
 	}
 }
 
-func (m *JSAPIService) PrepayPayment(request jsapi.PrepayRequest) (*jsapi.PrepayWithRequestPaymentResponse, error) {
+func (m *jsAPIService) PrepayPayment(request jsapi.PrepayRequest) (*jsapi.PrepayWithRequestPaymentResponse, error) {
 	request.Appid = core.String(m.appID)
 	request.Mchid = core.String(m.mchID)
 	request.NotifyUrl = core.String(m.notifyURL)
@@ -38,7 +44,7 @@ func (m *JSAPIService) PrepayPayment(request jsapi.PrepayRequest) (*jsapi.Prepay
 	return resp, nil
 }
 
-func (m *JSAPIService) QueryOrderById(transactionId string) (*payments.Transaction, error) {
+func (m *jsAPIService) QueryOrderById(transactionId string) (*payments.Transaction, error) {
 	req := jsapi.QueryOrderByIdRequest{
 		TransactionId: core.String(transactionId),
 		Mchid:         core.String(m.mchID),
@@ -47,7 +53,7 @@ func (m *JSAPIService) QueryOrderById(transactionId string) (*payments.Transacti
 	return trans, err
 }
 
-func (m *JSAPIService) QueryOrderByOutTradeNo(outTradeNo string) (*payments.Transaction, error) {
+func (m *jsAPIService) QueryOrderByOutTradeNo(outTradeNo string) (*payments.Transaction, error) {
 	req := jsapi.QueryOrderByOutTradeNoRequest{
 		OutTradeNo: core.String(outTradeNo),
 		Mchid:         core.String(m.mchID),
@@ -56,7 +62,7 @@ func (m *JSAPIService) QueryOrderByOutTradeNo(outTradeNo string) (*payments.Tran
 	return trans, err
 }
 
-func (m *JSAPIService) CloseOrder(outTradeNo string) error{
+func (m *jsAPIService) CloseOrder(outTradeNo string) error{
 	req := jsapi.CloseOrderRequest{
 		OutTradeNo: core.String(outTradeNo),
 		Mchid:         core.String(m.mchID),
