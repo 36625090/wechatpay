@@ -45,10 +45,10 @@ import (
 	"context"
 	"log"
 
-	"github.com/36625090/wechatpay/core"
-	"github.com/36625090/wechatpay/core/option"
-	"github.com/36625090/wechatpay/services/certificates"
-	"github.com/36625090/wechatpay/utils"
+	"github.com/wechatpay-apiv3/wechatpay-go/core"
+	"github.com/wechatpay-apiv3/wechatpay-go/core/option"
+	"github.com/wechatpay-apiv3/wechatpay-go/services/certificates"
+	"github.com/wechatpay-apiv3/wechatpay-go/utils"
 )
 
 func main() {
