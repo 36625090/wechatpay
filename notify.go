@@ -14,10 +14,9 @@ type NotifyService interface {
 }
 
 type notifyService struct {
-	appID     string
-	mchID     string
-	notifyURL string
-	handler   *notify.Handler
+	appID   string
+	mchID   string
+	handler *notify.Handler
 }
 
 func (n *notifyService) ParseNotifyRequest(ctx context.Context, request *http.Request, content interface{}) (*notify.Request, error) {
@@ -39,11 +38,10 @@ func (m *Client) NotifyService() (NotifyService, error) {
 		certificateVisitor = downloader.MgrInstance().GetCertificateVisitor(m.mchID)
 	}
 	// 3. 使用证书访问器初始化 `notify.Handler`
-	handler := notify.NewNotifyHandler(m.mchAPIv3Key, verifiers.NewSHA256WithRSAVerifier(certificateVisitor))
+	handler, err := notify.NewRSANotifyHandler(m.mchAPIv3Key, verifiers.NewSHA256WithRSAVerifier(certificateVisitor))
 	return &notifyService{
-		appID:     "",
-		mchID:     "",
-		notifyURL: "",
-		handler:   handler,
-	}, nil
+		appID:   m.appId,
+		mchID:   m.mchID,
+		handler: handler,
+	}, err
 }

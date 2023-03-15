@@ -46,7 +46,7 @@ func NewWechatClient(cfg *Config) (WechatPayClient, error) {
 
 	client, err := core.NewClient(ctx, opts...)
 	if err != nil {
-		return nil, fmt.Errorf("new wechat pay client err:%s", err)
+		return nil, fmt.Errorf("new wechat pay client err: %s", err)
 	}
 
 	wechatClient := &Client{
